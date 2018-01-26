@@ -1,6 +1,6 @@
 {
   "name": "quick-compile",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Super fast compiler for develop a app",
   "main": "index.js",
   "scripts": {},
@@ -19,7 +19,7 @@
     "url": "https://github.com/2youyou2/quick-compile/issues"
   },
   "homepage": "https://github.com/2youyou2/quick-compile/issues",
-  "devDependencies": {
+  "dependencies": {
     "JSONStream": "^1.3.2",
     "async": "^2.6.0",
     "babel-core": "^6.26.0",
