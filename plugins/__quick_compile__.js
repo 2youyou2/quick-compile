@@ -3,6 +3,11 @@ var modules = {};
 var srcs = scripts.map(function (script) {
     var path = script.path;
     modules[path] = script;
+
+    if (script.mtime) {
+        path += `?mtime=${script.mtime}`;
+    }
+
     return path;
 });
 

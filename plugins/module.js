@@ -29,22 +29,16 @@ module.exports = function (opts) {
         else {
             relative = Path.relative(compiler.out, dst);
         }
-        let mtime = compiler._mtimes[src];
-        if (mtime) {
-            relative += `?mtime=${mtime}`;
-        }
         return relative;
     };
+
+    let excludes = opts.excludes || [];
+    excludes = excludes.map(exclude => exclude.replace(/\\/g, '/'));
 
     return {
         nodeModule: true,
         transform (script, compiler) {
             let {src, dst, ast, source} = script;
-            if (Path.extname(src) === '.json' && Path.extname(dst) === '.json') {
-                return;
-            }
-        
-            // copy .js
         
             // put all header in one line, so map will work normally.
             let header = `
@@ -72,8 +66,8 @@ module.exports = function (opts) {
                     }
                 })();`;
         
-            if (Path.extname(src) === '.json' && Path.extname(dst) === '.js') {
-                contents = 'module.exports = ' + source;
+            if (Path.extname(src) === '.json') {
+                source = 'module.exports = ' + source;
             }
     
             // parse ast
@@ -104,6 +98,11 @@ module.exports = function (opts) {
 
         compileFinished (compiler, done) {
             let cache = compiler._scriptsCache;
+            
+            cache = cache.filter(s => {
+                return excludes.indexOf(s.src) === -1;
+            });
+
             let scripts = cache.map(s => {
                 let deps = {};
                 for (let k in s.deps) {
@@ -111,8 +110,9 @@ module.exports = function (opts) {
                         return item.src === s.deps[k];
                     });
                 }
-
+                
                 return {
+                    mtime: compiler._mtimes[s.src],
                     deps: deps,
                     path: transformPath(s.src, s.dst, compiler)
                 };
