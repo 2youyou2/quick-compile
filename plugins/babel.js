@@ -3,6 +3,10 @@ const Babel = require('babel-core');
 module.exports = function () {
     return {
         transform (script) {
+            if (script.src.indexOf('.json') !== -1) {
+                return;
+            }
+            
             let result = Babel.transform(script.source, {
                 ast: false,
                 highlightCode: false,
