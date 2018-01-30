@@ -58,6 +58,8 @@ Object.assign(Compiler.prototype, {
     },
 
     _createWatcher (opts) {
+        console.log('watching...');
+
         const Chokidar = require('chokidar');
         
         let exts = opts.exts || ['.js'];
@@ -99,7 +101,7 @@ Object.assign(Compiler.prototype, {
     },
 
     build (opts, cb) {
-        console.time('start QuickCompiler build');
+        console.time('QuickCompiler build finished.');
         
         if (!opts.entries || opts.entries.length === 0) {
             console.error('Please specify the entries');
@@ -158,7 +160,7 @@ Object.assign(Compiler.prototype, {
             }
 
             this._compileFinished(() => {
-                console.timeEnd('start QuickCompiler build');
+                console.timeEnd('QuickCompiler build finished.');
                 cb();
             });
         });
@@ -290,8 +292,6 @@ Object.assign(Compiler.prototype, {
             return;
         }
 
-        this._mtimes[path] = stats.mtime.toJSON();
-
         this.plugins.forEach(plugin => {
             if (this.isNodeModulePath(path) && !plugin.nodeModule && !plugin.transform) {
                 return;
@@ -325,9 +325,9 @@ Object.assign(Compiler.prototype, {
     },
 
     _parseEntry (path, deep, cb) {
-        console.time('_transform: ' + path)
+        // console.time('_transform: ' + path)
         let source = this._transform(path);
-        console.timeEnd('_transform: ' + path)
+        // console.timeEnd('_transform: ' + path)
 
         console.time('parse modules')
         let concat = Concat(buf => {
@@ -426,7 +426,7 @@ Object.assign(Compiler.prototype, {
         md.on('missing', (id, parent) => {
             console.log(`Cannot resolve module [${id}] when parse [${parent.filename}]`);
             this._missingScripts = Lodash.union(this._missingScripts, [formatPath(parent.filename)]);
-        })
+        });
     },
 
     _compileFinished (cb) {
